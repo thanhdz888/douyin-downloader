@@ -1,93 +1,94 @@
 <div align="center">
 
-# 🎵 Douyin Downloader Panel v7
+# 🎵 Douyin Downloader
 
-**Công cụ tải video Douyin (TikTok Trung Quốc) hàng loạt — chạy trực tiếp trên trình duyệt, không cần cài đặt**
+**Bulk download videos from any Douyin (Chinese TikTok) account — runs directly in your browser, no installation needed**
 
-[![Version](https://img.shields.io/badge/version-7.0-blue?style=for-the-badge)](https://github.com/thanhdz888/douyin-downloader)
+[![Version](https://img.shields.io/badge/version-latest-blue?style=for-the-badge)](https://github.com/thanhdz888/douyin-downloader)
 [![Platform](https://img.shields.io/badge/platform-Douyin.com-ff0050?style=for-the-badge&logo=tiktok)](https://www.douyin.com)
-[![Language](https://img.shields.io/badge/language-JavaScript-yellow?style=for-the-badge&logo=javascript)](https://github.com/thanhdz888/douyin-downloader/blob/main/douyin.js)
-[![No Login](https://img.shields.io/badge/login-not%20required-success?style=for-the-badge&logo=checkmarx)](https://github.com/thanhdz888/douyin-downloader)
+[![Language](https://img.shields.io/badge/language-JavaScript-yellow?style=for-the-badge&logo=javascript)](./douyin.js)
+[![Login Required](https://img.shields.io/badge/login-not%20required-brightgreen?style=for-the-badge&logo=checkmarx)](./douyin.js)
+[![License](https://img.shields.io/badge/license-Free-success?style=for-the-badge)](./douyin.js)
 
 </div>
 
 ---
 
-## ✨ Tính năng nổi bật
+## ✨ Features
 
-| Tính năng | Mô tả |
-|-----------|-------|
-| 📥 **Tải hàng loạt** | Quét và tải toàn bộ video của một tài khoản Douyin |
-| ⚡ **Tải đồng thời** | Hỗ trợ tải nhiều video cùng lúc (tối đa 10 luồng) |
-| 🔍 **Bộ lọc thông minh** | Lọc theo lượt thích, ngày đăng, thời lượng, chiều video |
-| 💾 **Chế độ RAM thấp** | Tự động dọn bộ nhớ, phù hợp máy cấu hình yếu |
-| 🔄 **Tự động thử lại** | Tự thử lại khi gặp lỗi mạng, tối đa 5 lần |
-| 📂 **Xuất link IDM** | Xuất danh sách link ra `.txt` để dùng với IDM |
-| 🎬 **Xem trước video** | Xem trước video trực tiếp trong giao diện |
-| 📝 **Đặt tên linh hoạt** | Đặt tên file theo tiêu đề, số thứ tự, hoặc ngày đăng |
-| 🕓 **Lịch sử tải** | Ghi nhớ video đã tải, tự động bỏ qua khi chạy lại |
-| 🛑 **Dừng / Tiếp tục** | Tạm dừng và tiếp tục bất cứ lúc nào |
+| Feature | Description |
+|---------|-------------|
+| 📥 **Bulk Download** | Scan and download all videos from any Douyin account |
+| ⚡ **Concurrent Downloads** | Download multiple videos simultaneously (up to 10 threads) |
+| 🔍 **Smart Filters** | Filter by likes, upload date, video duration, and orientation |
+| 💾 **Low RAM Mode** | Automatic memory cleanup — works on low-spec machines |
+| 🔄 **Auto Retry** | Automatically retries failed downloads (up to 5 times) |
+| 📂 **Export Links (IDM)** | Export video URLs to a `.txt` file for use with IDM |
+| 🎬 **Video Preview** | Preview videos directly inside the panel |
+| 📝 **Flexible Naming** | Save files by title, counter (1, 2, 3...), or upload date |
+| 🕓 **Download History** | Remembers downloaded videos and skips them automatically |
+| 🛑 **Pause / Resume** | Pause and continue the download process at any time |
 
 ---
 
-## 🚀 Cách sử dụng
+## 🚀 How to Use
 
-> ✅ **Không cần đăng nhập, không cần cài đặt phần mềm!**
+> ✅ **No login required. No installation needed. Runs entirely in your browser.**
 
-### Bước 1 — Mở trang người dùng Douyin
-Truy cập trang hồ sơ của tài khoản bạn muốn tải trên [douyin.com](https://www.douyin.com), ví dụ:
+### Step 1 — Open a Douyin Profile Page
+Go to the profile of any account you want to download from on [douyin.com](https://www.douyin.com):
 ```
 https://www.douyin.com/user/MS4wLjABAAAAxxxxxx
 ```
 
-### Bước 2 — Mở Console trình duyệt
-Nhấn `F12` → chọn tab **Console**
+### Step 2 — Open Browser DevTools
+Press `F12` → Select the **Console** tab
 
-### Bước 3 — Dán và chạy script
-Sao chép toàn bộ nội dung file [`douyin.js`](./douyin.js), dán vào Console và nhấn **Enter**.
+### Step 3 — Paste and Run the Script
+Copy the entire contents of [`douyin.js`](./douyin.js), paste it into the Console, and press **Enter**.
 
-### Bước 4 — Sử dụng giao diện
-1. Nhấn **🔍 Kiểm tra Video** để quét danh sách video
-2. Chọn video muốn tải (hoặc chọn tất cả)
-3. Nhấn **🚀 Tải Mục Đã Chọn**
-
----
-
-## ⚙️ Tùy chọn bộ lọc
-
-```
-📌 Video Max     — Giới hạn số video quét (0 = tất cả)
-❤️  Likes Min/Max — Lọc theo khoảng lượt thích
-📅 Ngày Đăng    — Lọc video trong khoảng thời gian
-⏱️  Thời lượng   — Lọc theo độ dài video (giây)
-↔️  Hướng video  — Ngang / Dọc / Vuông
-```
+### Step 4 — Use the Panel
+1. Click **🔍 Check Videos** to scan the account's videos
+2. Select the videos you want (or select all)
+3. Click **🚀 Download Selected**
 
 ---
 
-## 📁 Cấu trúc project
+## ⚙️ Filter Options
+
+```
+📌 Video Max      — Limit the number of videos to scan (0 = all)
+❤️  Likes Min/Max  — Filter by like count range
+📅 Date Range    — Filter videos by upload date
+⏱️  Duration      — Filter by video length (seconds)
+↔️  Orientation   — Landscape / Portrait / Square
+```
+
+---
+
+## 📁 Project Structure
 
 ```
 douyin-downloader/
-├── douyin.js        # Script chính — dán vào Console trình duyệt để chạy
-└── README.md        # Hướng dẫn sử dụng
+├── douyin.js     # Main script — paste into browser console to run
+└── README.md     # This documentation
 ```
 
 ---
 
-## ⚠️ Lưu ý
+## ⚠️ Disclaimer
 
-> - Script chạy **100% trên trình duyệt**, không cần đăng nhập hay cài đặt.
-> - Sử dụng cho mục đích **cá nhân, học tập, nghiên cứu**.
-> - Tác giả không chịu trách nhiệm về việc sử dụng sai mục đích.
+> - This script runs **entirely in your browser**. No server, no app, no login required.
+> - Intended for **personal, educational, and research use only**.
+> - The author is not responsible for any misuse.
 
 ---
 
-## 👨‍💻 Tác giả
+## 👨‍💻 Author
 
 <div align="center">
 
-**Nguyễn Xuân Thành**
+**Nguyen Xuan Thanh**
 
 [![YouTube](https://img.shields.io/badge/YouTube-@thanhxnt4-red?style=flat-square&logo=youtube)](https://www.youtube.com/@thanhxnt4)
 [![Facebook](https://img.shields.io/badge/Facebook-nguyen.thanh.749031-1877F2?style=flat-square&logo=facebook)](https://www.facebook.com/nguyen.thanh.749031)
@@ -97,5 +98,5 @@ douyin-downloader/
 ---
 
 <div align="center">
-<sub>Made with ❤️ by Nguyễn Xuân Thành • © 2025</sub>
+<sub>Made with ❤️ by Nguyen Xuan Thanh</sub>
 </div>
