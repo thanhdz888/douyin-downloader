@@ -1,4 +1,4 @@
-(async () => {
+﻿(async () => {
     'use strict';
 
     // ++ START PANEL IDs ++
@@ -58,11 +58,7 @@
     const PROGRESS_STATUS_CLASS = `${PANEL_ID}-progress-status`;
     // -- END CSS CLASSES --
 
-    // ++ START TRIAL & ACTIVATION CONFIGURATION ++
-    const ENABLE_TRIAL_SYSTEM = true;
-    const CURRENT_ACTIVATION_KEY = "TYvYY";
-    const VALID_START_DATE_STRING = "22/09/2025";
-    const VALID_END_DATE_STRING = "25/12/2026";
+    // ++ SOCIAL LINKS ++
     const YOUTUBE_CHANNEL_LINK = "https://www.youtube.com/@thanhxnt4";
     const FACEBOOK_CHANNEL_LINK = "https://www.facebook.com/nguyen.thanh.749031";
     const MAX_USES_PER_VERSION = 1000;
@@ -78,9 +74,6 @@
     // -- END OFFLINE KEY CONFIGURATION --
     
     // --- STORAGE KEYS ---
-    const TRIAL_DATA_STORAGE_KEY = 'douyin_downloader_trial_data_v7_nxthanh';
-    const PAID_ACTIVATION_DATA_KEY = 'douyin_downloader_paid_activation_v2_nxthanh';
-    const PERMANENT_KEY_STORAGE = 'douyin_downloader_permanent_key_v1_nxthanh';
     const LOCALSTORAGE_KEY_HISTORY = 'douyin_downloaded_history_nxthanh';
     // --- END STORAGE KEYS ---
 
@@ -103,7 +96,6 @@
     let downloadErrorsButtonElement = null;
     let youtubeButtonElement = null;
     let facebookButtonElement = null;
-    let upgradeButtonElement = null;
     let exportLinksButtonElement = null;
 
     let videoMaxLimitInputElement = null;
@@ -134,7 +126,6 @@
     let videoPreviewModalElement = null;
     let videoPreviewPlayerElement = null;
     let detailPopupElement = null;
-    let upgradePopupElement = null;
     let overlayElement = null;
 
     let isChecking = false;
@@ -153,25 +144,8 @@
     let startTime = 0;
     let status = { checkedAPI: 0, checkedValid: 0, checkedSkippedFilter: 0, totalToDownload: 0, downloadedSuccess: 0, downloadedFailed: 0, downloadedSkipped: 0, downloadedRetries: 0, minLikes: Infinity, maxLikes: -Infinity, };
 
-    let currentUsageCount = 0;
-    let isUsageLimited = false;
-    let activePaidKey = null;
-
     // --- HELPER FUNCTIONS ---
-    const parseCustomDate = (dateStr) => { // DD-MM-YYYY
-        if (!dateStr) return null;
-        const parts = dateStr.split('-');
-        if (parts.length !== 3) return null;
-        const day = parseInt(parts[0], 10);
-        const month = parseInt(parts[1], 10) - 1;
-        const year = parseInt(parts[2], 10);
-        if (isNaN(day) || isNaN(month) || isNaN(year)) return null;
-        const date = new Date(year, month, day);
-        if (date.getFullYear() !== year || date.getMonth() !== month || date.getDate() !== day) return null;
-        return date;
-    };
-
-    const getOrGeneratePermanentKey = () => {
+    const getOrGeneratePermanentKey_REMOVED = () => {
         let permanentKey = localStorage.getItem(PERMANENT_KEY_STORAGE);
         if (!permanentKey) {
             permanentKey = crypto.randomUUID();
@@ -371,7 +345,7 @@
 
         try {
             const anyProcessRunning = checking || downloading;
-            const shouldDisableMainButtons = anyProcessRunning || (isUsageLimited && !activePaidKey);
+            const shouldDisableMainButtons = anyProcessRunning;
 
             checkButtonElement.disabled = shouldDisableMainButtons;
             checkButtonElement.textContent = checking ? '🔍 Đang Kiểm tra...' : '🔍 Kiểm tra Video';
@@ -429,8 +403,6 @@
 
             youtubeButtonElement.disabled = false;
             facebookButtonElement.disabled = false;
-            if(upgradeButtonElement && !activePaidKey) upgradeButtonElement.disabled = anyProcessRunning;
-
             if (selectAllCheckboxElement) updateSelectAllState();
 
             // Low RAM Mode check
@@ -474,182 +446,6 @@
         if (dateObj.getFullYear() !== year || dateObj.getMonth() !== month || dateObj.getDate() !== day) { return null; }
         return dateObj;
     };
-    const checkTrialStatus = () => {
-        if (!ENABLE_TRIAL_SYSTEM) {
-            currentUsageCount = 0;
-            isUsageLimited = false;
-            return true;
-        }
-
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-
-        const codeValidStartDate = parseDateString(VALID_START_DATE_STRING);
-        const codeValidEndDate = parseDateString(VALID_END_DATE_STRING);
-
-        if (!codeValidStartDate || !codeValidEndDate) {
-            isUsageLimited = true;
-            return false;
-        }
-
-        let trialData = null;
-        try {
-            const storedData = localStorage.getItem(TRIAL_DATA_STORAGE_KEY);
-            if (storedData) {
-                trialData = JSON.parse(storedData);
-            }
-        } catch (e) {
-            localStorage.removeItem(TRIAL_DATA_STORAGE_KEY);
-            trialData = null;
-        }
-
-        const todayStringForStorage = `${String(today.getDate()).padStart(2, '0')}/${String(today.getMonth() + 1).padStart(2, '0')}/${today.getFullYear()}`;
-
-        if (!trialData || trialData.activeKey !== CURRENT_ACTIVATION_KEY) {
-             trialData = {
-                activeKey: CURRENT_ACTIVATION_KEY,
-                firstActivationSystemDateString: todayStringForStorage,
-                associatedKeyEndDateString: VALID_END_DATE_STRING,
-                usageCount: 0
-            };
-            try {
-                localStorage.setItem(TRIAL_DATA_STORAGE_KEY, JSON.stringify(trialData));
-                currentUsageCount = 0;
-                isUsageLimited = false;
-            } catch (e) {
-                isUsageLimited = true;
-                return false;
-            }
-        } else {
-            currentUsageCount = trialData.usageCount || 0;
-        }
-
-        if (today < codeValidStartDate || today > codeValidEndDate) {
-            isUsageLimited = true;
-            return false;
-        }
-
-        const keyFirstActivationDate = parseDateString(trialData.firstActivationSystemDateString);
-        const keyAssociatedEndDate = parseDateString(trialData.associatedKeyEndDateString);
-        if (!keyFirstActivationDate || !keyAssociatedEndDate || today < keyFirstActivationDate || today > keyAssociatedEndDate) {
-            isUsageLimited = true;
-            return false;
-        }
-
-        if (currentUsageCount >= MAX_USES_PER_VERSION) {
-            isUsageLimited = true;
-            return false;
-        }
-        
-        isUsageLimited = false;
-        return true;
-    };
-    const saveUsageCount = () => {
-        if (activePaidKey) {
-            try {
-                const paidData = {
-                    key: activePaidKey.key,
-                    usageCount: currentUsageCount
-                };
-                localStorage.setItem(PAID_ACTIVATION_DATA_KEY, JSON.stringify(paidData));
-            } catch(e) {
-                logError("Lỗi lưu số lần sử dụng trả phí", e, 'Lỗi LocalStorage');
-            }
-        } else { // Trial user
-            try {
-                const storedData = localStorage.getItem(TRIAL_DATA_STORAGE_KEY);
-                let trialData = storedData ? JSON.parse(storedData) : {};
-                if (trialData.activeKey === CURRENT_ACTIVATION_KEY) {
-                    trialData.usageCount = currentUsageCount;
-                    localStorage.setItem(TRIAL_DATA_STORAGE_KEY, JSON.stringify(trialData));
-                }
-            } catch (e) {
-                logError("Lỗi lưu số lần sử dụng (trial)", e, 'Lỗi LocalStorage');
-            }
-        }
-    };
-    const setPanelToUsageLimitMode = () => {
-        if (statusAreaElement) {
-            statusAreaElement.innerHTML = `Bạn đã hết lượt sử dụng hoặc key đã hết hạn. Vui lòng bấm <strong>Nâng cấp</strong>.`;
-            statusAreaElement.style.color = '#dc3545';
-            statusAreaElement.style.fontWeight = 'bold';
-            statusAreaElement.style.textAlign = 'center';
-        }
-        if (checklistAreaElement) {
-            checklistAreaElement.innerHTML = `<div style="padding: 20px; text-align: center; font-size: 16px; color: #dc3545; display: flex; flex-direction: column; justify-content: center; align-items: center; height: 100%;"><p style="margin-bottom: 15px;">Key của bạn đã hết hạn hoặc hết lượt sử dụng.</p><p>Vui lòng bấm nút <strong>Nâng cấp</strong> để lấy key mới và liên hệ với nhà phát triển.</p></div>`;
-        }
-        const elementsToDisable = [
-            checkButtonElement, startButtonElement, pauseButtonElement, cancelButtonElement, restartButtonElement,
-            clearHistoryButtonElement, downloadErrorsButtonElement, videoMaxLimitInputElement, minLikesInputElement,
-            maxLikesInputElement, dateStartInputElement, dateEndInputElement, durationMinInputElement, durationMaxInputElement,
-            orientationNgangCheckboxElement, orientationDocCheckboxElement, orientationVuongCheckboxElement,
-            onlyNewCheckboxElement, autoRetryCheckboxElement, maxRetriesInputElement, selectAllCheckboxElement,
-            concurrentDownloadsInputElement, filenameFormatTitleRadioElement, filenameFormatCounterRadioElement,
-            filenameFormatDateRadioElement, lowRamCheckboxElement
-        ];
-        elementsToDisable.forEach(el => {
-            if (el) {
-                el.disabled = true;
-                if (el.tagName === 'BUTTON') {
-                    el.style.pointerEvents = 'none';
-                }
-            }
-        });
-        if (progressBarElement?.parentElement) {
-            progressBarElement.parentElement.style.display = 'none';
-        }
-        if (progressTextElement) {
-            progressTextElement.textContent = '';
-        }
-        if (youtubeButtonElement) youtubeButtonElement.disabled = false;
-        if (facebookButtonElement) facebookButtonElement.disabled = false;
-        if (upgradeButtonElement) upgradeButtonElement.disabled = false;
-        if (hideButtonElement) hideButtonElement.disabled = false;
-        if (checklistHeaderElement) {
-            checklistHeaderElement.style.opacity = '0.5';
-            checklistHeaderElement.style.pointerEvents = 'none';
-        }
-        updateStatus(`Hết hạn hoặc hết lượt. Bấm "Nâng cấp".`, true);
-    };
-    
-    const copyToClipboard = (text, buttonElement) => {
-        navigator.clipboard.writeText(text).then(() => {
-            if (buttonElement) {
-                const originalText = buttonElement.textContent;
-                buttonElement.textContent = 'Đã sao chép!';
-                buttonElement.disabled = true;
-                setTimeout(() => {
-                    buttonElement.textContent = originalText;
-                    buttonElement.disabled = false;
-                }, 2000);
-            }
-        }).catch(err => {
-            logError('Lỗi sao chép Key', err, 'ClipboardError');
-            alert('Không thể sao chép tự động. Vui lòng sao chép thủ công.');
-        });
-    };
-
-    const handleGetKeyClick = (event) => {
-        const btn = event.target;
-        const display = document.getElementById(KEY_DISPLAY_ID);
-        if (!btn || !display) return;
-        const userKey = getOrGeneratePermanentKey();
-        display.textContent = userKey;
-        Object.assign(display.style, { color: '#007bff', fontWeight: 'bold' });
-        btn.textContent = 'Copy Key';
-        copyToClipboard(userKey, btn);
-    };
-
-    const handleUpgradeClick = () => { showUpgradePopup(); };
-    const showUpgradePopup = () => {
-        if (overlayElement) overlayElement.style.display = 'block';
-        if (upgradePopupElement) upgradePopupElement.style.display = 'flex';
-    };
-    const hideUpgradePopup = () => {
-        if (overlayElement) overlayElement.style.display = 'none';
-        if (upgradePopupElement) upgradePopupElement.style.display = 'none';
-    };
-
     const createUI = () => {
         if (document.getElementById(PANEL_ID)) {
             try {
@@ -662,7 +458,7 @@
         checkButtonElement = null; startButtonElement = null; pauseButtonElement = null; cancelButtonElement = null;
         restartButtonElement = null; hideButtonElement = null; clearHistoryButtonElement = null;
         downloadErrorsButtonElement = null; youtubeButtonElement = null;
-        facebookButtonElement = null; upgradeButtonElement = null; exportLinksButtonElement = null;
+        facebookButtonElement = null; exportLinksButtonElement = null;
         videoMaxLimitInputElement = null; minLikesInputElement = null; maxLikesInputElement = null;
         dateStartInputElement = null; dateEndInputElement = null; durationMinInputElement = null; durationMaxInputElement = null;
         orientationNgangCheckboxElement = null; orientationDocCheckboxElement = null; orientationVuongCheckboxElement = null;
@@ -672,7 +468,7 @@
         checklistAreaElement = null; checklistHeaderElement = null;
         statsDivElement = null; videoPreviewModalElement = null;
         videoPreviewPlayerElement = null; detailPopupElement = null;
-        overlayElement = null; upgradePopupElement = null;
+        overlayElement = null;
         concurrentDownloadsInputElement = null; lowRamCheckboxElement = null;
 
         panelElement = document.createElement('div');
@@ -804,15 +600,6 @@
         facebookButtonElement.style.flex = '1';
         linkButtonsContainer.appendChild(facebookButtonElement);
         mainControlGroup.appendChild(linkButtonsContainer);
-
-        upgradeButtonElement = document.createElement('button');
-        upgradeButtonElement.id = UPGRADE_BTN_ID;
-        upgradeButtonElement.innerHTML = '⭐ Nâng cấp';
-        upgradeButtonElement.title = 'Nâng cấp lên bản trả phí để sử dụng không giới hạn';
-        upgradeButtonElement.onclick = handleUpgradeClick;
-        applyButtonStyle(upgradeButtonElement, 'success');
-        upgradeButtonElement.style.width = '100%';
-        mainControlGroup.appendChild(upgradeButtonElement);
 
         exportLinksButtonElement = document.createElement('button');
         exportLinksButtonElement.id = EXPORT_LINKS_BTN_ID;
@@ -1187,75 +974,13 @@
         overlayElement = document.createElement('div');
         overlayElement.id = OVERLAY_ID;
         Object.assign(overlayElement.style, { display: 'none', position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0, 0, 0, 0.4)', zIndex: '99999' });
-        overlayElement.onclick = () => { hideDetailPopup(); hideUpgradePopup(); };
+        overlayElement.onclick = () => { hideDetailPopup(); };
         panelElement.appendChild(overlayElement);
 
         detailPopupElement = document.createElement('div');
         detailPopupElement.id = DETAIL_POPUP_ID;
         Object.assign(detailPopupElement.style, { display: 'none', position: 'absolute', zIndex: '100000', backgroundColor: '#fff', border: '1px solid #ccc', borderRadius: '4px', boxShadow: '0 2px 5px rgba(0,0,0,0.2)', padding: '10px', maxWidth: '300px', wordWrap: 'break-word', whiteSpace: 'normal' });
         panelElement.appendChild(detailPopupElement);
-
-        upgradePopupElement = document.createElement('div');
-        upgradePopupElement.id = UPGRADE_POPUP_ID;
-        Object.assign(upgradePopupElement.style, {
-            display: 'none', position: 'fixed', zIndex: '100001', left: '50%', top: '50%', transform: 'translate(-50%, -50%)',
-            width: '450px', backgroundColor: '#fff', borderRadius: '8px', boxShadow: '0 4px 15px rgba(0,0,0,0.25)',
-            flexDirection: 'column', padding: '0', border: '1px solid #bbb'
-        });
-
-        const upgradeHeader = document.createElement('div');
-        Object.assign(upgradeHeader.style, { padding: '12px 15px', backgroundColor: '#f7f7f7', borderBottom: '1px solid #ddd', borderTopLeftRadius: '8px', borderTopRightRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' });
-        const upgradeTitle = document.createElement('h3');
-        upgradeTitle.textContent = 'Nâng cấp hoặc Kích hoạt';
-        Object.assign(upgradeTitle.style, { margin: '0', fontSize: '16px', fontWeight: '600' });
-        const upgradeCloseBtn = document.createElement('span');
-        upgradeCloseBtn.innerHTML = '×';
-        Object.assign(upgradeCloseBtn.style, { fontSize: '24px', cursor: 'pointer', color: '#888', fontWeight: 'bold' });
-        upgradeCloseBtn.onclick = hideUpgradePopup;
-        upgradeHeader.appendChild(upgradeTitle);
-        upgradeHeader.appendChild(upgradeCloseBtn);
-
-        const upgradeBody = document.createElement('div');
-        Object.assign(upgradeBody.style, { padding: '15px', fontSize: '14px', lineHeight: '1.6' });
-        upgradeBody.innerHTML = `
-            <p>Để nâng cấp, vui lòng làm theo các bước sau:</p>
-            <ol style="padding-left: 20px;">
-                <li style="margin-bottom: 5px;">Bấm nút <strong>"Lấy Key Kích Hoạt"</strong> bên dưới.</li>
-                <li style="margin-bottom: 5px;">Hệ thống sẽ tạo hoặc hiển thị một key duy nhất cho trình duyệt của bạn.</li>
-                <li style="margin-bottom: 5px;">Sao chép key đó và gửi cho <strong>Nguyễn Xuân Thành</strong> qua Zalo/Facebook để nhận gói sử dụng.</li>
-            </ol>
-        `;
-        const keyContainer = document.createElement('div');
-        Object.assign(keyContainer.style, { marginTop: '15px', marginBottom: '15px' });
-        const keyLabel = document.createElement('div');
-        keyLabel.textContent = 'Key Kích Hoạt của bạn:';
-        Object.assign(keyLabel.style, { marginBottom: '5px', fontWeight: 'bold' });
-        const keyDisplay = document.createElement('div');
-        keyDisplay.id = KEY_DISPLAY_ID;
-        keyDisplay.textContent = 'Bấm "Lấy Key Kích Hoạt" để tạo key...';
-        Object.assign(keyDisplay.style, {
-            padding: '10px', backgroundColor: '#eee', borderRadius: '4px', border: '1px solid #ccc',
-            fontFamily: 'monospace', color: '#333', minHeight: '40px', display: 'flex',
-            alignItems: 'center', justifyContent: 'center', wordBreak: 'break-all'
-        });
-        keyContainer.appendChild(keyLabel);
-        keyContainer.appendChild(keyDisplay);
-        upgradeBody.appendChild(keyContainer);
-
-        const upgradeFooter = document.createElement('div');
-        Object.assign(upgradeFooter.style, { padding: '15px', backgroundColor: '#f7f7f7', borderTop: '1px solid #ddd', borderBottomLeftRadius: '8px', borderBottomRightRadius: '8px', display: 'flex', justifyContent: 'flex-end' });
-        const getKeyBtn = document.createElement('button');
-        getKeyBtn.id = GET_KEY_BTN_ID;
-        getKeyBtn.textContent = 'Lấy Key Kích Hoạt';
-        getKeyBtn.onclick = handleGetKeyClick;
-        applyButtonStyle(getKeyBtn, 'primary');
-        upgradeFooter.appendChild(getKeyBtn);
-        
-        upgradePopupElement.appendChild(upgradeHeader);
-        upgradePopupElement.appendChild(upgradeBody);
-        upgradePopupElement.appendChild(upgradeFooter);
-
-        panelElement.appendChild(upgradePopupElement);
 
         document.body.appendChild(panelElement);
 
@@ -1393,18 +1118,18 @@
             } else if (checkedCount === totalCheckboxes) {
                 selectAllCheckboxElement.checked = true;
                 selectAllCheckboxElement.indeterminate = false;
-                startButtonElement.disabled = isChecking || isRunning || (isUsageLimited && !activePaidKey);
-                if (exportLinksButtonElement) exportLinksButtonElement.disabled = isChecking || isRunning || (isUsageLimited && !activePaidKey);
+                startButtonElement.disabled = isChecking || isRunning;
+                if (exportLinksButtonElement) exportLinksButtonElement.disabled = isChecking || isRunning;
             } else {
                 selectAllCheckboxElement.checked = false;
                 selectAllCheckboxElement.indeterminate = true;
-                startButtonElement.disabled = isChecking || isRunning || (isUsageLimited && !activePaidKey);
-                if (exportLinksButtonElement) exportLinksButtonElement.disabled = isChecking || isRunning || (isUsageLimited && !activePaidKey);
+                startButtonElement.disabled = isChecking || isRunning;
+                if (exportLinksButtonElement) exportLinksButtonElement.disabled = isChecking || isRunning;
             }
             if (!startButtonElement.disabled || (isChecking || isRunning)) {
                 startButtonElement.textContent = `🚀 Tải (${checkedCount}) Mục Đã Chọn`;
             }
-            if (checkedCount === 0 && !(isChecking || isRunning) && !(isUsageLimited && !activePaidKey)) {
+            if (checkedCount === 0 && !(isChecking || isRunning)) {
                 startButtonElement.textContent = '🚀 Tải Mục Đã Chọn';
             }
         }
@@ -1596,29 +1321,6 @@
     const startCheckProcess = async () => {
         if (isChecking || isRunning) { updateStatus("Đang có tiến trình khác chạy.", true); return; }
 
-        if (isUsageLimited && !activePaidKey) {
-            setPanelToUsageLimitMode();
-            return;
-        }
-        
-        if (activePaidKey) {
-            currentUsageCount++;
-            saveUsageCount();
-             if (currentUsageCount > activePaidKey.uses) {
-                isUsageLimited = true;
-                setPanelToUsageLimitMode();
-                return;
-            }
-        } else if (ENABLE_TRIAL_SYSTEM) {
-             currentUsageCount++;
-             saveUsageCount();
-             if (currentUsageCount > MAX_USES_PER_VERSION) {
-                isUsageLimited = true;
-                setPanelToUsageLimitMode();
-                return;
-             }
-        }
-
         resetState();
         isExiting = false;
         resetUIState(true, false);
@@ -1735,13 +1437,6 @@
                 const finalMsg = `Hoàn tất kiểm tra ${status.checkedValid} video (Bỏ qua: ${status.checkedSkippedFilter}, API: ${status.checkedAPI}) trong ${durationProcess} giây. ${limitReached ? '(Đạt giới hạn)' : ''}`;
                 updateStatus(finalMsg, errorLog.length > 0);
                 
-                // Set final status after check is complete
-                if (activePaidKey) {
-                    updateStatus("Chúc bạn ngày mới vui vẻ!");
-                } else {
-                    updateStatus("Bạn đang sử dụng bản miễn phí.");
-                }
-
                 resetUIState(false, false);
             } else {
                 updateStatus(`Kiểm tra bị hủy sau ${durationProcess} giây.`);
@@ -1753,10 +1448,6 @@
     
     const startDownloadProcess = async () => {
         if (isChecking || isRunning) { updateStatus("Đang có tiến trình khác chạy.", true); return; }
-
-        if (isUsageLimited && !activePaidKey) {
-            setPanelToUsageLimitMode(); return;
-        }
 
         const selectedIds = getSelectedVideoIds();
         if (selectedIds.length === 0) {
@@ -2185,3 +1876,6 @@
         });
     }
 })();
+
+
+
