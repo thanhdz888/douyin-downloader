@@ -464,7 +464,7 @@
             display: 'flex', alignItems: 'center', color: '#212529'
         });
         const titlePart = document.createElement('div');
-        titlePart.textContent = 'Douyin Downloader Panel v7';
+        titlePart.textContent = 'Douyin Downloader';
         Object.assign(titlePart.style, { fontWeight: 'bold', flexShrink: '0', marginRight: '15px' });
         const centerPart = document.createElement('div');
         Object.assign(centerPart.style, { flexGrow: '1', textAlign: 'center', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis', margin: '0 10px', paddingRight: '60px' });
@@ -575,6 +575,10 @@
         applyButtonStyle(facebookButtonElement, 'info');
         facebookButtonElement.style.flex = '1';
         linkButtonsContainer.appendChild(facebookButtonElement);
+        mainControlGroup.appendChild(linkButtonsContainer);
+
+        const githubRowContainer = document.createElement('div');
+        Object.assign(githubRowContainer.style, { display: 'flex', gap: '8px', marginTop: '5px' });
 
         githubButtonElement = document.createElement('button');
         githubButtonElement.id = GITHUB_BTN_ID;
@@ -583,9 +587,8 @@
         githubButtonElement.onclick = () => { window.open(GITHUB_CHANNEL_LINK, '_blank', 'noopener,noreferrer'); };
         applyButtonStyle(githubButtonElement, 'secondary');
         githubButtonElement.style.flex = '1';
-        linkButtonsContainer.appendChild(githubButtonElement);
-        
-        mainControlGroup.appendChild(linkButtonsContainer);
+        githubRowContainer.appendChild(githubButtonElement);
+        mainControlGroup.appendChild(githubRowContainer);
 
         donateButtonElement = document.createElement('button');
         donateButtonElement.id = DONATE_BTN_ID;
