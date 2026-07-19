@@ -1,4 +1,4 @@
-﻿(async () => {
+(async () => {
     'use strict';
 
     // ++ START PANEL IDs ++
@@ -7,7 +7,6 @@
     const HIDE_BTN_ID = `${PANEL_ID}-hide-btn`;
     const VIDEO_PREVIEW_MODAL_ID = `${PANEL_ID}-video-preview-modal`;
     const DETAIL_POPUP_ID = `${PANEL_ID}-detail-popup`;
-    const UPGRADE_POPUP_ID = `${PANEL_ID}-upgrade-popup`;
     const OVERLAY_ID = `${PANEL_ID}-overlay`;
     const CHECKLIST_AREA_ID = `${PANEL_ID}-checklist-area`;
     const CHECKLIST_HEADER_ID = `${PANEL_ID}-checklist-header`;
@@ -20,8 +19,6 @@
     const DOWNLOAD_ERRORS_BTN_ID = `${PANEL_ID}-download-errors-btn`;
     const YOUTUBE_BTN_ID = `${PANEL_ID}-youtube-btn`;
     const FACEBOOK_BTN_ID = `${PANEL_ID}-facebook-btn`;
-    const UPGRADE_BTN_ID = `${PANEL_ID}-upgrade-btn`;
-    const GET_KEY_BTN_ID = `${PANEL_ID}-get-key-btn`;
     const EXPORT_LINKS_BTN_ID = `${PANEL_ID}-export-links-btn`;
     const SELECT_ALL_CB_ID = `${PANEL_ID}-select-all-cb`;
     const ONLY_NEW_CB_ID = `${PANEL_ID}-only-new-cb`;
@@ -46,7 +43,6 @@
     const PROGRESS_BAR_ID = `${PANEL_ID}-progress-bar`;
     const PROGRESS_TEXT_ID = `${PANEL_ID}-progress-text`;
     const STATS_DIV_ID = `${PANEL_ID}-header-stats`;
-    const KEY_DISPLAY_ID = `${PANEL_ID}-key-display`;
     // -- END PANEL IDs --
 
     // ++ START CSS CLASSES ++
@@ -58,24 +54,9 @@
     const PROGRESS_STATUS_CLASS = `${PANEL_ID}-progress-status`;
     // -- END CSS CLASSES --
 
-    // ++ SOCIAL LINKS ++
     const YOUTUBE_CHANNEL_LINK = "https://www.youtube.com/@thanhxnt4";
     const FACEBOOK_CHANNEL_LINK = "https://www.facebook.com/nguyen.thanh.749031";
-    const MAX_USES_PER_VERSION = 1000;
-    // -- END TRIAL & ACTIVATION CONFIGURATION --
-
-    // ++ START OFFLINE KEY CONFIGURATION (BẠN SẼ SỬA Ở ĐÂY) ++
-    const PAID_KEYS_CONFIG = [
-        // Cú pháp: "KEY/NGÀY-BẮT-ĐẦU,NGÀY-KẾT-THÚC/SỐ-LẦN-DÙNG"
-        // Ví dụ:
-        // "3b8018b7-9bae-4ba9-90f6-cb5a487219f2/01-08-2025,1-10-2025/",
-        // "a1b2c3d4-e5f6-7g8h-9i0j-k1l2m3n4o5p6/01-01-2025,31-12-2099/99999", // Key vĩnh viễn
-    ];
-    // -- END OFFLINE KEY CONFIGURATION --
-    
-    // --- STORAGE KEYS ---
     const LOCALSTORAGE_KEY_HISTORY = 'douyin_downloaded_history_nxthanh';
-    // --- END STORAGE KEYS ---
 
     const MAX_FILENAME_LENGTH = 50;
     const DEFAULT_MAX_RETRIES = 2;
@@ -145,20 +126,6 @@
     let status = { checkedAPI: 0, checkedValid: 0, checkedSkippedFilter: 0, totalToDownload: 0, downloadedSuccess: 0, downloadedFailed: 0, downloadedSkipped: 0, downloadedRetries: 0, minLikes: Infinity, maxLikes: -Infinity, };
 
     // --- HELPER FUNCTIONS ---
-    const getOrGeneratePermanentKey_REMOVED = () => {
-        let permanentKey = localStorage.getItem(PERMANENT_KEY_STORAGE);
-        if (!permanentKey) {
-            permanentKey = crypto.randomUUID();
-            try {
-                localStorage.setItem(PERMANENT_KEY_STORAGE, permanentKey);
-            } catch (e) {
-                logError("Không thể lưu Permanent Key vào LocalStorage", e, "StorageError");
-                return permanentKey;
-            }
-        }
-        return permanentKey;
-    };
-    
     const waitforme = (millisec) => { return new Promise(resolve => { if (isExiting) { resolve(); return; } if (isPaused) { const interval = setInterval(() => { if (!isPaused || isExiting) { clearInterval(interval); resolve(); } }, 100); } else { if (isExiting) { resolve(); } else { setTimeout(() => { resolve('') }, millisec); } } }); };
     const fetchVideoBatch = async (sec_user_id, max_cursor) => {
         const apiUrl = `https://www.douyin.com/aweme/v1/web/aweme/post/?device_platform=webapp&aid=6383&channel=channel_pc_web&sec_user_id=${sec_user_id}&max_cursor=${max_cursor}&count=20`;
@@ -1031,7 +998,6 @@
     const attachDragListeners = (headerElement, panelElement, controlsContainer) => {
         const onMouseDown = (e) => {
             if (e.button !== 0 || (controlsContainer && controlsContainer.contains(e.target))) { return; }
-            if (upgradePopupElement && upgradePopupElement.contains(e.target)) { return; } 
             e.preventDefault();
             isDragging = true;
             dragOffsetX = e.clientX - panelElement.offsetLeft;
@@ -1722,7 +1688,6 @@
         const cell = event.currentTarget;
         const fullText = cell.dataset.fullContent;
         if (!fullText || !detailPopupElement || !overlayElement) return;
-        hideUpgradePopup();
         detailPopupElement.textContent = fullText;
         const cellRect = cell.getBoundingClientRect();
         const panelRect = panelElement.getBoundingClientRect();
@@ -1739,7 +1704,7 @@
         detailPopupElement.style.left = `${left - panelRect.left}px`;
         overlayElement.style.display = 'block';
     };
-    const hideDetailPopup = () => { if (detailPopupElement) detailPopupElement.style.display = 'none'; if (overlayElement && upgradePopupElement.style.display === 'none') overlayElement.style.display = 'none'; };
+    const hideDetailPopup = () => { if (detailPopupElement) detailPopupElement.style.display = 'none'; if (overlayElement) overlayElement.style.display = 'none'; };
     const saveHistory = () => {
         if (downloadedHistory.size === 0) { try { localStorage.removeItem(LOCALSTORAGE_KEY_HISTORY); } catch (e) {} return; }
         try {
@@ -1772,88 +1737,13 @@
             return null;
         }
     };
-    
-    const checkPermanentKeyActivation = () => {
-        const userKey = localStorage.getItem(PERMANENT_KEY_STORAGE);
-        if (!userKey) return false;
 
-        for (const configString of PAID_KEYS_CONFIG) {
-            const parts = configString.split('/');
-            if (parts.length !== 3) continue;
-
-            const configKey = parts[0];
-            if (configKey !== userKey) continue;
-
-            const dateParts = parts[1].split(',');
-            const usesPart = parts[2];
-            if (dateParts.length !== 2 || isNaN(parseInt(usesPart, 10))) continue;
-
-            const startDate = parseCustomDate(dateParts[0]);
-            const endDate = parseCustomDate(dateParts[1]);
-            const maxUses = parseInt(usesPart, 10);
-
-            if (!startDate || !endDate) continue;
-
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            endDate.setHours(23, 59, 59, 999);
-
-            if (today < startDate || today > endDate) {
-                isUsageLimited = true;
-                continue;
-            }
-
-            try {
-                const storedPaidData = localStorage.getItem(PAID_ACTIVATION_DATA_KEY);
-                if (storedPaidData) {
-                    const paidData = JSON.parse(storedPaidData);
-                    if (paidData.key === userKey) {
-                        currentUsageCount = paidData.usageCount || 0;
-                    } else {
-                        currentUsageCount = 0;
-                    }
-                } else {
-                    currentUsageCount = 0;
-                }
-            } catch(e) {
-                logError("Lỗi tải dữ liệu trả phí", e, 'Lỗi LocalStorage');
-                currentUsageCount = 0;
-            }
-
-            if (currentUsageCount >= maxUses) {
-                isUsageLimited = true;
-                continue;
-            }
-
-            activePaidKey = { key: userKey, uses: maxUses, expiry: endDate, startDate: startDate };
-            isUsageLimited = false;
-            return true;
-        }
-
-        return false;
-    };
-    
     const initializeDownloader = () => {
         isExiting = false;
         loadHistory();
         createUI();
-
-        // **LOGIC ƯU TIÊN KEY VIP**
-        if (checkPermanentKeyActivation()) {
-            // ĐÃ KÍCH HOẠT VIP
-            resetState();
-            if (upgradeButtonElement) upgradeButtonElement.style.display = 'none';
-            updateStatus("Chúc bạn ngày mới vui vẻ!");
-        } else {
-            // CHƯA KÍCH HOẠT VIP, KIỂM TRA DÙNG THỬ
-            if (checkTrialStatus()) {
-                resetState();
-                updateStatus("Bạn đang sử dụng bản miễn phí.");
-            } else {
-                // HẾT TẤT CẢ -> KHÓA
-                setPanelToUsageLimitMode();
-            }
-        }
+        resetState();
+        updateStatus('Ready. Click "Check Videos" to start.');
 
         const styleId = `${PANEL_ID}-styles`;
         if (!document.getElementById(styleId)) {
