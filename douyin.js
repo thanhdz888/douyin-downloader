@@ -19,6 +19,9 @@
     const DOWNLOAD_ERRORS_BTN_ID = `${PANEL_ID}-download-errors-btn`;
     const YOUTUBE_BTN_ID = `${PANEL_ID}-youtube-btn`;
     const FACEBOOK_BTN_ID = `${PANEL_ID}-facebook-btn`;
+    const GITHUB_BTN_ID = `${PANEL_ID}-github-btn`;
+    const DONATE_BTN_ID = `${PANEL_ID}-donate-btn`;
+    const DONATE_POPUP_ID = `${PANEL_ID}-donate-popup`;
     const EXPORT_LINKS_BTN_ID = `${PANEL_ID}-export-links-btn`;
     const SELECT_ALL_CB_ID = `${PANEL_ID}-select-all-cb`;
     const ONLY_NEW_CB_ID = `${PANEL_ID}-only-new-cb`;
@@ -56,6 +59,7 @@
 
     const YOUTUBE_CHANNEL_LINK = "https://www.youtube.com/@thanhxnt4";
     const FACEBOOK_CHANNEL_LINK = "https://www.facebook.com/nguyen.thanh.749031";
+    const GITHUB_CHANNEL_LINK = "https://github.com/ngxuanthanh1303/";
     const LOCALSTORAGE_KEY_HISTORY = 'douyin_downloaded_history_nxthanh';
 
     const MAX_FILENAME_LENGTH = 50;
@@ -77,6 +81,9 @@
     let downloadErrorsButtonElement = null;
     let youtubeButtonElement = null;
     let facebookButtonElement = null;
+    let githubButtonElement = null;
+    let donateButtonElement = null;
+    let donatePopupElement = null;
     let exportLinksButtonElement = null;
 
     let videoMaxLimitInputElement = null;
@@ -370,6 +377,8 @@
 
             youtubeButtonElement.disabled = false;
             facebookButtonElement.disabled = false;
+            if (githubButtonElement) githubButtonElement.disabled = false;
+            if (donateButtonElement) donateButtonElement.disabled = false;
             if (selectAllCheckboxElement) updateSelectAllState();
 
             // Low RAM Mode check
@@ -425,7 +434,7 @@
         checkButtonElement = null; startButtonElement = null; pauseButtonElement = null; cancelButtonElement = null;
         restartButtonElement = null; hideButtonElement = null; clearHistoryButtonElement = null;
         downloadErrorsButtonElement = null; youtubeButtonElement = null;
-        facebookButtonElement = null; exportLinksButtonElement = null;
+        facebookButtonElement = null; githubButtonElement = null; donateButtonElement = null; exportLinksButtonElement = null;
         videoMaxLimitInputElement = null; minLikesInputElement = null; maxLikesInputElement = null;
         dateStartInputElement = null; dateEndInputElement = null; durationMinInputElement = null; durationMaxInputElement = null;
         orientationNgangCheckboxElement = null; orientationDocCheckboxElement = null; orientationVuongCheckboxElement = null;
@@ -435,7 +444,7 @@
         checklistAreaElement = null; checklistHeaderElement = null;
         statsDivElement = null; videoPreviewModalElement = null;
         videoPreviewPlayerElement = null; detailPopupElement = null;
-        overlayElement = null;
+        donatePopupElement = null; overlayElement = null;
         concurrentDownloadsInputElement = null; lowRamCheckboxElement = null;
 
         panelElement = document.createElement('div');
@@ -566,7 +575,30 @@
         applyButtonStyle(facebookButtonElement, 'info');
         facebookButtonElement.style.flex = '1';
         linkButtonsContainer.appendChild(facebookButtonElement);
+
+        githubButtonElement = document.createElement('button');
+        githubButtonElement.id = GITHUB_BTN_ID;
+        githubButtonElement.innerHTML = '🐙 GitHub';
+        githubButtonElement.title = 'Truy cập GitHub Nguyễn Xuân Thành';
+        githubButtonElement.onclick = () => { window.open(GITHUB_CHANNEL_LINK, '_blank', 'noopener,noreferrer'); };
+        applyButtonStyle(githubButtonElement, 'secondary');
+        githubButtonElement.style.flex = '1';
+        linkButtonsContainer.appendChild(githubButtonElement);
+        
         mainControlGroup.appendChild(linkButtonsContainer);
+
+        donateButtonElement = document.createElement('button');
+        donateButtonElement.id = DONATE_BTN_ID;
+        donateButtonElement.innerHTML = '💝 Ủng hộ tác giả';
+        donateButtonElement.title = 'Donate ủng hộ tác giả Nguyễn Xuân Thành';
+        donateButtonElement.onclick = () => {
+            if (overlayElement) overlayElement.style.display = 'block';
+            if (donatePopupElement) donatePopupElement.style.display = 'block';
+        };
+        applyButtonStyle(donateButtonElement, 'success');
+        donateButtonElement.style.width = '100%';
+        donateButtonElement.style.marginTop = '8px';
+        mainControlGroup.appendChild(donateButtonElement);
 
         exportLinksButtonElement = document.createElement('button');
         exportLinksButtonElement.id = EXPORT_LINKS_BTN_ID;
@@ -941,13 +973,38 @@
         overlayElement = document.createElement('div');
         overlayElement.id = OVERLAY_ID;
         Object.assign(overlayElement.style, { display: 'none', position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', backgroundColor: 'rgba(0, 0, 0, 0.4)', zIndex: '99999' });
-        overlayElement.onclick = () => { hideDetailPopup(); };
+        overlayElement.onclick = () => { hideDetailPopup(); hideDonatePopup(); };
         panelElement.appendChild(overlayElement);
 
         detailPopupElement = document.createElement('div');
         detailPopupElement.id = DETAIL_POPUP_ID;
         Object.assign(detailPopupElement.style, { display: 'none', position: 'absolute', zIndex: '100000', backgroundColor: '#fff', border: '1px solid #ccc', borderRadius: '4px', boxShadow: '0 2px 5px rgba(0,0,0,0.2)', padding: '10px', maxWidth: '300px', wordWrap: 'break-word', whiteSpace: 'normal' });
         panelElement.appendChild(detailPopupElement);
+
+        donatePopupElement = document.createElement('div');
+        donatePopupElement.id = DONATE_POPUP_ID;
+        Object.assign(donatePopupElement.style, { display: 'none', position: 'fixed', zIndex: '100001', left: '50%', top: '50%', transform: 'translate(-50%, -50%)', width: '320px', backgroundColor: '#fff', borderRadius: '12px', boxShadow: '0 10px 30px rgba(0,0,0,0.3)', padding: '0', overflow: 'hidden', textAlign: 'center', fontFamily: 'Arial, sans-serif' });
+        donatePopupElement.innerHTML = `
+            <div style="background: linear-gradient(135deg, #11998e, #38ef7d); color: #fff; padding: 15px; font-size: 18px; font-weight: bold; border-bottom: 2px solid #0f8980;">
+                💝 Ủng hộ tác giả
+            </div>
+            <div style="padding: 25px 20px;">
+                <p style="margin: 0 0 15px 0; font-size: 14px; color: #555;">Cảm ơn bạn đã sử dụng công cụ!</p>
+                <div style="background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
+                    <div style="font-weight: bold; color: #333; font-size: 16px; margin-bottom: 5px;">Ngân hàng MBBank</div>
+                    <div style="color: #666; font-size: 14px; margin-bottom: 8px;">Nguyễn Xuân Thành</div>
+                    <div style="font-size: 24px; font-weight: bold; color: #0056b3; letter-spacing: 1px; user-select: all; cursor: text;">01266778899999</div>
+                </div>
+                <button id="donate-close-btn" style="background-color: #f1f3f5; border: 1px solid #ccc; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; color: #333; width: 100%; transition: background-color 0.2s;">Đóng</button>
+            </div>
+        `;
+        panelElement.appendChild(donatePopupElement);
+        donatePopupElement.querySelector('#donate-close-btn').onclick = () => {
+            donatePopupElement.style.display = 'none';
+            if (overlayElement) overlayElement.style.display = 'none';
+        };
+        donatePopupElement.querySelector('#donate-close-btn').onmouseover = function() { this.style.backgroundColor = '#e2e6ea'; };
+        donatePopupElement.querySelector('#donate-close-btn').onmouseout = function() { this.style.backgroundColor = '#f1f3f5'; };
 
         document.body.appendChild(panelElement);
 
@@ -1704,7 +1761,8 @@
         detailPopupElement.style.left = `${left - panelRect.left}px`;
         overlayElement.style.display = 'block';
     };
-    const hideDetailPopup = () => { if (detailPopupElement) detailPopupElement.style.display = 'none'; if (overlayElement) overlayElement.style.display = 'none'; };
+    const hideDetailPopup = () => { if (detailPopupElement) detailPopupElement.style.display = 'none'; if (overlayElement && donatePopupElement && donatePopupElement.style.display !== 'block') overlayElement.style.display = 'none'; };
+    const hideDonatePopup = () => { if (donatePopupElement) donatePopupElement.style.display = 'none'; if (overlayElement && detailPopupElement && detailPopupElement.style.display !== 'block') overlayElement.style.display = 'none'; };
     const saveHistory = () => {
         if (downloadedHistory.size === 0) { try { localStorage.removeItem(LOCALSTORAGE_KEY_HISTORY); } catch (e) {} return; }
         try {
