@@ -4,7 +4,7 @@
 
 **Bulk download videos from any Douyin (Chinese TikTok) account — runs directly in your browser, no installation needed**
 
-[![Version](https://img.shields.io/badge/version-latest-blue?style=for-the-badge)](https://github.com/thanhdz888/douyin-downloader)
+[![Version](https://img.shields.io/badge/version-latest-blue?style=for-the-badge)](https://github.com/ngxuanthanh1303/douyin-downloader)
 [![Platform](https://img.shields.io/badge/platform-Douyin.com-ff0050?style=for-the-badge&logo=tiktok)](https://www.douyin.com)
 [![Language](https://img.shields.io/badge/language-JavaScript-yellow?style=for-the-badge&logo=javascript)](./douyin.js)
 [![Login Required](https://img.shields.io/badge/login-not%20required-brightgreen?style=for-the-badge&logo=checkmarx)](./douyin.js)
