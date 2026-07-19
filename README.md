@@ -2,12 +2,12 @@
 
 # 🎵 Douyin Downloader Panel v7
 
-**Công cụ tải video Douyin (TikTok Trung Quốc) hàng loạt — trực tiếp trên trình duyệt**
+**Công cụ tải video Douyin (TikTok Trung Quốc) hàng loạt — chạy trực tiếp trên trình duyệt, không cần cài đặt**
 
 [![Version](https://img.shields.io/badge/version-7.0-blue?style=for-the-badge)](https://github.com/thanhdz888/douyin-downloader)
 [![Platform](https://img.shields.io/badge/platform-Douyin.com-ff0050?style=for-the-badge&logo=tiktok)](https://www.douyin.com)
 [![Language](https://img.shields.io/badge/language-JavaScript-yellow?style=for-the-badge&logo=javascript)](https://github.com/thanhdz888/douyin-downloader/blob/main/douyin.js)
-[![License](https://img.shields.io/badge/license-Personal%20Use-green?style=for-the-badge)](./LICENSE)
+[![No Login](https://img.shields.io/badge/login-not%20required-success?style=for-the-badge&logo=checkmarx)](https://github.com/thanhdz888/douyin-downloader)
 
 </div>
 
@@ -31,6 +31,8 @@
 ---
 
 ## 🚀 Cách sử dụng
+
+> ✅ **Không cần đăng nhập, không cần cài đặt phần mềm!**
 
 ### Bước 1 — Mở trang người dùng Douyin
 Truy cập trang hồ sơ của tài khoản bạn muốn tải trên [douyin.com](https://www.douyin.com), ví dụ:
@@ -67,16 +69,15 @@ Sao chép toàn bộ nội dung file [`douyin.js`](./douyin.js), dán vào Conso
 
 ```
 douyin-downloader/
-├── douyin.js        # Script chính — chạy trực tiếp trên trình duyệt
+├── douyin.js        # Script chính — dán vào Console trình duyệt để chạy
 └── README.md        # Hướng dẫn sử dụng
 ```
 
 ---
 
-## ⚠️ Lưu ý quan trọng
+## ⚠️ Lưu ý
 
-> - Script chạy **100% trên trình duyệt**, không cần cài đặt phần mềm.
-> - Chỉ hoạt động khi bạn đang **đăng nhập Douyin** trên trình duyệt.
+> - Script chạy **100% trên trình duyệt**, không cần đăng nhập hay cài đặt.
 > - Sử dụng cho mục đích **cá nhân, học tập, nghiên cứu**.
 > - Tác giả không chịu trách nhiệm về việc sử dụng sai mục đích.
 
@@ -88,8 +89,8 @@ douyin-downloader/
 
 **Nguyễn Xuân Thành**
 
-[![YouTube](https://img.shields.io/badge/YouTube-@thanhxn-red?style=flat-square&logo=youtube)](https://www.youtube.com/@thanhxn)
-[![Facebook](https://img.shields.io/badge/Facebook-thanh.nguyen.31225-1877F2?style=flat-square&logo=facebook)](https://www.facebook.com/thanh.nguyen.31225)
+[![YouTube](https://img.shields.io/badge/YouTube-@thanhxnt4-red?style=flat-square&logo=youtube)](https://www.youtube.com/@thanhxnt4)
+[![Facebook](https://img.shields.io/badge/Facebook-nguyen.thanh.749031-1877F2?style=flat-square&logo=facebook)](https://www.facebook.com/nguyen.thanh.749031)
 
 </div>
 
