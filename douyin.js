@@ -63,8 +63,8 @@
     const CURRENT_ACTIVATION_KEY = "TYvYY";
     const VALID_START_DATE_STRING = "22/09/2025";
     const VALID_END_DATE_STRING = "25/12/2026";
-    const YOUTUBE_CHANNEL_LINK = "https://www.youtube.com/@thanhxn";
-    const FACEBOOK_CHANNEL_LINK = "https://www.facebook.com/thanh.nguyen.31225";
+    const YOUTUBE_CHANNEL_LINK = "https://www.youtube.com/@thanhxnt4";
+    const FACEBOOK_CHANNEL_LINK = "https://www.facebook.com/nguyen.thanh.749031";
     const MAX_USES_PER_VERSION = 1000;
     // -- END TRIAL & ACTIVATION CONFIGURATION --
 
